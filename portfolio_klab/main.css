@@ -101,11 +101,6 @@ nav {
     transition: var(--transition);
 }
 
-.badge {
-    color: red;
-
-}
-
 /* Hero Section */
 .hero {
     display: flex;
@@ -675,7 +670,7 @@ footer {
 
     .about-content {
         flex-direction: column;
-
+        
     }
 
     .process-steps {
