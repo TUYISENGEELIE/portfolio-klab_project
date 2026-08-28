@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Complaint Management System - Login</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- CSS Styles -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #ef233c;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .auth-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .auth-form-container {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .auth-form-container h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            color: var(--gray-color);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn:disabled {
+            background-color: var(--gray-color);
+            cursor: not-allowed;
+        }
+
+        .form-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-image-container {
+            flex: 1;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: var(--danger-color);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            min-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: rgba(76, 201, 240, 0.9);
+            color: white;
+        }
+
+        .notification.error {
+            background-color: rgba(239, 35, 60, 0.9);
+            color: white;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-content i {
+            margin-right: 10px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auth-box {
+                flex-direction: column;
+            }
+
+            .auth-image-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-form-container">
+                <!-- Login Form -->
+                <div id="login-form-wrapper">
+                    <h1>Student Complaint Management System</h1>
+                    <p class="subtitle"> Wellcaming, University Student and High level students, This is you time to
+                        compalints you Cases, Free free to ask??</p>
+                    <div id="login-error" class="error-message"></div>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <div class="form-footer">
+                        <p>Don't have an account? <a href="#" id="show-create-form-link">Create Account</a></p>
+                    </div>
+                </div>
+
+                <!-- Create Account Form (Initially Hidden) -->
+                <div id="create-form-wrapper" style="display: none;">
+                    <h1>Create Your Account</h1>
+                    <p class="subtitle">Join our complaint management system</p>
+                    <div id="create-error" class="error-message"></div>
+                    <form id="create-account-form">
+                        <div class="form-group">
+                            <label for="create-name">Full Name</label>
+                            <input type="text" id="create-name" placeholder="Enter your full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-email">Email</label>
+                            <input type="email" id="create-email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-password">Password</label>
+                            <input type="password" id="create-password" placeholder="Enter your password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-confirm-password">Confirm Password</label>
+                            <input type="password" id="create-confirm-password" placeholder="Confirm your password"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-department">Department</label>
+                            <select id="create-department" required>
+                                <option value="">Select your department</option>
+                                <option value="IT">Information Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Law">Law</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Medicine">Medicine</option>
+                                <option value="Arts">Arts</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">Create Account</button>
+                    </form>
+                    <div class="form-footer">
+                        <p>Already have an account? <a href="#" id="show-login-form-link">Login</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-image-container">
+                <img src="./Image/Screenshot 2025-12-08 153005.png" alt="Student with laptop">
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmU_FtaPo3xZqsKrfanqK52WtN6qX8QTs",
+            authDomain: "student-complients.firebaseapp.com",
+            projectId: "student-complients",
+            storageBucket: "student-complients.firebasestorage.app",
+            messagingSenderId: "443148742940",
+            appId: "1:443148742940:web:16f24e5cfcbd35dfc4cad9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- DOM ELEMENTS ---
+        const loginForm = document.getElementById('login-form');
+        const createAccountForm = document.getElementById('create-account-form');
+        const loginWrapper = document.getElementById('login-form-wrapper');
+        const createWrapper = document.getElementById('create-form-wrapper');
+
+        // --- AUTHENTICATION LISTENER ---
+        // Check if user is already logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // If user is already logged in, redirect to dashboard
+                window.location.href = 'Index.html';
+            }
+        });
+
+        // --- UNIFIED AUTH PAGE LOGIC ---
+        document.getElementById('show-create-form-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            loginWrapper.style.display = 'none';
+            createWrapper.style.display = 'block';
+        });
+
+        document.getElementById('show-login-form-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            createWrapper.style.display = 'none';
+            loginWrapper.style.display = 'block';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+
+            showLoading();
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    // Redirect to dashboard on successful login
+                    window.location.href = 'Index.html';
+                })
+                .catch(error => {
+                    errorEl.textContent = error.message;
+                    errorEl.style.display = 'block';
+                    hideLoading();
+                });
+        });
+
+        createAccountForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('create-name').value;
+            const email = document.getElementById('create-email').value;
+            const password = document.getElementById('create-password').value;
+            const confirmPassword = document.getElementById('create-confirm-password').value;
+            const department = document.getElementById('create-department').value;
+            const errorEl = document.getElementById('create-error');
+
+            if (password !== confirmPassword) {
+                errorEl.textContent = "Passwords do not match";
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            showLoading();
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(cred => {
+                    return db.collection('students').doc(cred.user.uid).set({
+                        student_id: cred.user.uid,
+                        full_name: name,
+                        email,
+                        department,
+                        role: "student",
+                        created_at: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                })
+                .then(() => {
+                    // Redirect to dashboard after successful account creation
+                    window.location.href = 'Index.html';
+                })
+                .catch(error => {
+                    errorEl.textContent = error.message;
+                    errorEl.style.display = 'block';
+                    hideLoading();
+                });
+        });
+
+        // --- HELPER FUNCTIONS ---
+        function showLoading() {
+            document.getElementById('loading-indicator').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Close button functionality
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            });
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (document.body.contains(notification)) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

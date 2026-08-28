@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Students Complaint Management — Single File App</title>
+    <style>
+        /* --- BASIC LAYOUT --- */
+        :root {
+            --primary: #003366;
+            --accent: #0077cc
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, Arial, sans-serif;
+            background: #f4f6f8;
+            color: #111
+        }
+
+        header {
+            background: var(--primary);
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        header h1 {
+            font-size: 18px;
+            margin: 0
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 56px)
+        }
+
+        .left-panel {
+            width: 38%;
+            background: var(--primary);
+            color: #fff;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center
+        }
+
+        .left-panel h2 {
+            margin: 0 0 8px
+        }
+
+        .left-panel p {
+            opacity: .95
+        }
+
+        .photos {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px
+        }
+
+        .photos img {
+            width: 180px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid rgba(255, 255, 255, .12)
+        }
+
+        .main {
+            flex: 1;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            overflow: auto
+        }
+
+        .card {
+            width: 860px;
+            max-width: 95%;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .06);
+            padding: 22px
+        }
+
+        /* forms */
+        .row {
+            display: flex;
+            gap: 12px
+        }
+
+        .col {
+            flex: 1
+        }
+
+        .form-group {
+            margin-bottom: 12px
+        }
+
+        input[type=text],
+        input[type=email],
+        input[type=password],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d7dbe0;
+            border-radius: 6px
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #222
+        }
+
+        button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer
+        }
+
+        button.secondary {
+            background: #4b5563
+        }
+
+        .link {
+            color: var(--accent);
+            cursor: pointer
+        }
+
+        /* small components */
+        .nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #eef3ff;
+            color: var(--primary);
+            font-weight: 600
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th,
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eef1f5;
+            font-size: 14px
+        }
+
+        th {
+            background: #fbfdff;
+            text-align: left
+        }
+
+        .status-pending {
+            color: #b45309
+        }
+
+        .status-review {
+            color: #2563eb
+        }
+
+        .status-resolved {
+            color: #059669
+        }
+
+        /* responsive */
+        @media (max-width:900px) {
+            .container {
+                flex-direction: column
+            }
+
+            .left-panel {
+                width: 100%;
+                height: 260px
+            }
+
+            .main {
+                height: auto;
+                padding: 18px
+            }
+        }
+
+        /* tiny util */
+        .muted {
+            color: #6b7280;
+            font-size: 13px
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Students Complaint Management</h1>
+        <div id="user-actions"></div>
+    </header>
+
+    <div class="container">
+        <div class="left-panel">
+            <h2>Welcome to Students Complaint System</h2>
+            <p>Submit concerns, track progress, and get responses from administration — fast and secure.</p>
+            <div class="photos">
+                <!-- Replace with your images or keep these placeholders -->
+                <img id="student-photo" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=60"
+                    alt="student" />
+                <img id="lecturer-photo" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=60"
+                    alt="lecturer" />
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="card" id="app">
+                <!-- Views will be rendered here by JS -->
+            </div>
+
+            <div style="width:860px;max-width:95%;margin-top:14px;text-align:center" class="muted">
+                Single-file demo with Firebase (replace config below). For production split files and secure rules.
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase v8 (namespaced) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+        /*************** CONFIG - replace with your Firebase project config ***************/
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXLLNb4n3H-SXHGogKP7sWFJKSSNlSd9k",
+            authDomain: "login-form-386ba.firebaseapp.com",
+            projectId: "login-form-386ba",
+            storageBucket: "login-form-386ba.firebasestorage.app",
+            messagingSenderId: "928810583764",
+            appId: "1:928810583764:web:4051b701ee4eb4de009d41"
+        };
+        // Initialize
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        /*************** SIMPLE ROUTING & STATE ***************/
+        const appEl = document.getElementById('app');
+        let currentUser = null;
+
+        // initial render
+        renderAuthView();
+
+        // helper: show notification
+        function notify(msg) { alert(msg) }
+
+        /*************** AUTH VIEWS: LOGIN / REGISTER ***************/
+        function renderAuthView() {
+            appEl.innerHTML = `
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:300px">
+            <h3>Login</h3>
+            <div class="form-group"><label>Email</label><input id="login-email" type="email"></div>
+            <div class="form-group"><label>Password</label><input id="login-pass" type="password"></div>
+            <button onclick="handleLogin()">Login</button>
+            <div style="margin-top:8px" class="muted">Don't have an account? <span class="link" onclick="renderRegisterView()">Create one</span></div>
+          </div>
+
+          <div style="flex:1;min-width:300px">
+            <h3>Create account</h3>
+            <div class="form-group"><label>Full name</label><input id="reg-name" type="text"></div>
+            <div class="form-group"><label>Email</label><input id="reg-email" type="email"></div>
+            <div class="form-group"><label>Password</label><input id="reg-pass" type="password"></div>
+            <button onclick="handleRegister()">Create account</button>
+            <div style="margin-top:8px" class="muted">Or continue as <span class="link" onclick="renderGuestView()">Guest</span></div>
+          </div>
+        </div>
+      `;
+            document.getElementById('user-actions').innerHTML = '';
+        }
+
+        function renderRegisterView() { renderAuthView() }
+
+        function renderGuestView() {
+            // limited view — allow complaint submission but require email to save
+            currentUser = { uid: null, name: 'Guest', email: null, role: 'student' };
+            renderStudentDashboard();
+        }
+
+        /*************** AUTH HANDLERS ***************/
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            if (!name || !email || !pass) return notify('Please fill all fields');
+            try {
+                const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                await db.collection('users').doc(cred.user.uid).set({ name, email, role: 'student', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                notify('Account created — you are now logged in');
+                // proceed
+            } catch (e) { notify(e.message) }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value;
+            if (!email || !pass) return notify('Enter email and password');
+            try {
+                const cred = await auth.signInWithEmailAndPassword(email, pass);
+                // get profile
+                const doc = await db.collection('users').doc(cred.user.uid).get();
+                const data = doc.exists ? doc.data() : { name: cred.user.email, role: 'student' };
+                currentUser = { uid: cred.user.uid, name: data.name || cred.user.email, email: cred.user.email, role: data.role || 'student' };
+                renderStudentDashboard();
+            } catch (e) { notify(e.message) }
+        }
+
+        auth.onAuthStateChanged(async user => {
+            if (user) {
+                const doc = await db.collection('users').doc(user.uid).get().catch(() => null);
+                const data = doc && doc.exists ? doc.data() : null;
+                currentUser = { uid: user.uid, name: data ? data.name : user.email, email: user.email, role: data ? data.role || 'student' : 'student' };
+                // auto-route
+                if (currentUser.role === 'admin') renderAdminDashboard();
+                else renderStudentDashboard();
+            } else {
+                currentUser = null;
+                renderAuthView();
+            }
+        });
+
+        /*************** NAV / USER ACTIONS ***************/
+        function renderUserActions() {
+            if (!currentUser) return document.getElementById('user-actions').innerHTML = '';
+            document.getElementById('user-actions').innerHTML = `
+        <span style="margin-right:12px">Hello, <strong>${escapeHtml(currentUser.name || 'User')}</strong></span>
+        <button onclick="handleLogout()">Logout</button>
+      `;
+        }
+        async function handleLogout() { await auth.signOut(); currentUser = null; renderAuthView(); }
+
+        /*************** STUDENT DASHBOARD (1) ***************/
+        function renderStudentDashboard() {
+            renderUserActions();
+            appEl.innerHTML = `
+        <div class="nav">
+          <div class="badge">Student</div>
+          <div class="muted">Logged as: ${escapeHtml(currentUser.name || 'Guest')}</div>
+        </div>
+        <h3>Dashboard</h3>
+        <p class="muted">Welcome! Use the buttons below to create a complaint or view your submissions.</p>
+        <div style="display:flex;gap:12px;margin-top:14px;margin-bottom:18px">
+          <button onclick="renderComplaintForm()">Submit Complaint</button>
+          <button class="secondary" onclick="renderComplaintsList()">View My Complaints</button>
+        </div>
+        <div class="muted">Tip: Admins can login with role 'admin' to manage complaints.</div>
+      `;
+        }
+
+        /*************** COMPLAINT SUBMISSION (2) ***************/
+        function renderComplaintForm() {
+            renderUserActions();
+            appEl.innerHTML = `
+        <div class="nav"><div class="badge">Submit</div></div>
+        <h3>Submit Complaint</h3>
+        <div style="margin-top:12px">
+          <div class="form-group"><label>Title</label><input id="c-title" type="text"></div>
+          <div class="form-group"><label>Category</label>
+            <select id="c-category">
+              <option value="Academics">Academics</option>
+              <option value="Discipline">Discipline</option>
+              <option value="Finance">Finance</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Description</label><textarea id="c-desc" rows="5"></textarea></div>
+          <div class="form-group"><label>Attachment (PDF / JPG)</label><input id="c-file" type="file" accept="application/pdf,image/*"></div>
+          <div style="display:flex;gap:8px">
+            <button onclick="submitComplaint()">Submit</button>
+            <button class="secondary" onclick="renderStudentDashboard()">Cancel</button>
+          </div>
+        </div>
+      `;
+        }
+
+        async function submitComplaint() {
+            const title = document.getElementById('c-title').value.trim();
+            const category = document.getElementById('c-category').value;
+            const description = document.getElementById('c-desc').value.trim();
+            const file = document.getElementById('c-file').files[0];
+            if (!title || !description) return notify('Please provide title and description');
+
+            try {
+                let attachmentURL = '';
+                if (file) {
+                    const fileRef = storage.ref().child(`attachments/${Date.now()}_${file.name}`);
+                    const snap = await fileRef.put(file);
+                    attachmentURL = await snap.ref.getDownloadURL();
+                }
+
+                // build complaint object
+                const complaint = {
+                    studentId: currentUser && currentUser.uid ? currentUser.uid : null,
+                    studentName: currentUser && currentUser.name ? currentUser.name : 'Guest',
+                    title, category, description,
+                    attachmentURL,
+                    status: 'Pending',
+                    adminResponse: '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                await db.collection('complaints').add(complaint);
+                notify('Complaint submitted successfully');
+                renderComplaintsList();
+            } catch (e) { notify(e.message) }
+        }
+
+        /*************** COMPLAINTS LIST (3) ***************/
+        async function renderComplaintsList() {
+            renderUserActions();
+            appEl.innerHTML = `<h3>My Complaints</h3><div class="muted">Loading...</div>`;
+            try {
+                const query = db.collection('complaints').where('studentId', '==', currentUser && currentUser.uid ? currentUser.uid : null).orderBy('createdAt', 'desc');
+                const snapshot = await query.get();
+                const rows = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                let html = `
+          <h3>My Complaints</h3>
+          <table><thead><tr><th>Title</th><th>Category</th><th>Status</th><th>Submitted</th><th>Admin Reply</th><th>Attachment</th></tr></thead><tbody>`;
+                if (rows.length === 0) html += `<tr><td colspan=6 class="muted">No complaints found</td></tr>`;
+                for (const r of rows) {
+                    const ts = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString() : '—';
+                    const statusClass = r.status === 'Pending' ? 'status-pending' : r.status === 'In-Review' ? 'status-review' : 'status-resolved';
+                    html += `<tr><td>${escapeHtml(r.title)}</td><td>${escapeHtml(r.category)}</td><td class='${statusClass}'>${escapeHtml(r.status)}</td><td>${escapeHtml(ts)}</td><td>${escapeHtml(r.adminResponse || '—')}</td><td>${r.attachmentURL ? `<a href="${r.attachmentURL}" target="_blank">Open</a>` : '—'}</td></tr>`;
+                }
+                html += `</tbody></table><div style="margin-top:12px"><button onclick="renderComplaintForm()">Submit New</button><button class="secondary" style="margin-left:8px" onclick="renderStudentDashboard()">Back</button></div>`;
+                appEl.innerHTML = html;
+            } catch (e) { notify(e.message) }
+        }
+
+        /*************** ADMIN DASHBOARD (4) ***************/
+        async function renderAdminDashboard() {
+            renderUserActions();
+            appEl.innerHTML = `<h3>Admin Dashboard</h3><div class="muted">Loading complaints...</div>`;
+            try {
+                const snapshot = await db.collection('complaints').orderBy('createdAt', 'desc').get();
+                const rows = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                // analytics
+                const total = rows.length;
+                const resolved = rows.filter(r => r.status === 'Resolved').length;
+                const pending = rows.filter(r => r.status === 'Pending').length;
+                const inReview = rows.filter(r => r.status === 'In-Review').length;
+
+                let html = `<div class="row" style="margin-bottom:14px"><div class="col card" style="padding:12px"><strong>Total</strong><div class="muted" style="font-size:20px">${total}</div></div><div class="col card" style="padding:12px"><strong>Resolved</strong><div class="muted" style="font-size:20px">${resolved}</div></div><div class="col card" style="padding:12px"><strong>In-Review</strong><div class="muted" style="font-size:20px">${inReview}</div></div><div class="col card" style="padding:12px"><strong>Pending</strong><div class="muted" style="font-size:20px">${pending}</div></div></div>`;
+
+                html += `<table><thead><tr><th>Student</th><th>Title</th><th>Category</th><th>Status</th><th>Submitted</th><th>Actions</th></tr></thead><tbody>`;
+                if (rows.length === 0) html += `<tr><td colspan=6 class="muted">No complaints</td></tr>`;
+                for (const r of rows) {
+                    const ts = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString() : '—';
+                    html += `<tr><td>${escapeHtml(r.studentName || '—')}</td><td>${escapeHtml(r.title)}</td><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r.status)}</td><td>${escapeHtml(ts)}</td><td><button onclick="openAdminComplaint('${r.id}')">Open</button></td></tr>`;
+                }
+                html += `</tbody></table>`;
+                appEl.innerHTML = html;
+            } catch (e) { notify(e.message) }
+        }
+
+        async function openAdminComplaint(id) {
+            const doc = await db.collection('complaints').doc(id).get();
+            if (!doc.exists) return notify('Not found');
+            const d = doc.data();
+            renderUserActions();
+            appEl.innerHTML = `
+        <h3>Manage Complaint</h3>
+        <div class="muted">Student: ${escapeHtml(d.studentName || '—')} — ${escapeHtml(d.studentId || '—')}</div>
+        <div style="margin-top:12px"><strong>${escapeHtml(d.title)}</strong></div>
+        <div class="muted">Category: ${escapeHtml(d.category)} | Status: ${escapeHtml(d.status)}</div>
+        <div style="margin-top:12px">${escapeHtml(d.description)}</div>
+        <div style="margin-top:12px">Attachment: ${d.attachmentURL ? `<a href='${d.attachmentURL}' target='_blank'>Open</a>` : '—'}</div>
+
+        <div style="margin-top:14px">
+          <label>Update Status</label>
+          <select id="admin-status">
+            <option ${d.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option ${d.status === 'In-Review' ? 'selected' : ''}>In-Review</option>
+            <option ${d.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+          </select>
+        </div>
+        <div style="margin-top:10px"><label>Reply to student (visible)</label><textarea id="admin-reply" rows="4">${escapeHtml(d.adminResponse || '')}</textarea></div>
+        <div style="margin-top:12px"><button onclick="saveAdminResponse('${id}')">Save</button><button class='secondary' style='margin-left:8px' onclick="renderAdminDashboard()">Back</button></div>
+      `;
+        }
+
+        async function saveAdminResponse(id) {
+            const status = document.getElementById('admin-status').value;
+            const reply = document.getElementById('admin-reply').value;
+            await db.collection('complaints').doc(id).update({ status, adminResponse: reply, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            notify('Updated');
+            renderAdminDashboard();
+        }
+
+        /*************** HELPERS & UTILITIES ***************/
+        function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>"']/g, function (s) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[s]; }); }
+
+        // expose some functions to buttons
+        window.renderStudentDashboard = renderStudentDashboard;
+        window.renderComplaintForm = renderComplaintForm;
+        window.renderComplaintsList = renderComplaintsList;
+        window.renderAdminDashboard = renderAdminDashboard;
+        window.handleLogin = handleLogin;
+        window.handleRegister = handleRegister;
+        window.submitComplaint = submitComplaint;
+        window.handleLogout = handleLogout;
+        window.openAdminComplaint = openAdminComplaint;
+        window.saveAdminResponse = saveAdminResponse;
+
+        /*************** INITIAL ADMIN ACCOUNT HELPER (DEV ONLY) ***************/
+        // For testing, create an admin user and set role to 'admin' in users collection.
+        // Use Firebase Console or run this once from console after creating a user.
+        // Example (run in browser console after creating auth user):
+        // db.collection('users').doc('<ADMIN_UID>').set({name:'Admin',email:'admin@x.com',role:'admin'})
+
+    </script>
+
+    <!-- FIREBASE SECURITY RULES (copy into Firebase Console -> Firestore -> Rules) -->
+    <details style="width:860px;max-width:95%;margin:20px auto">
+        <summary style="cursor:pointer;padding:10px;background:#fff;border-radius:6px">Firebase Firestore Rules (click
+            to view)</summary>
+        <pre style="white-space:pre-wrap;padding:12px;margin:0;background:#f8fafc;border-radius:6px">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // users collection: users can read their own profile, admins can read all
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      allow delete: if false;
+    }
+
+    // complaints collection
+    match /complaints/{complaintId} {
+      allow create: if request.auth != null; // any authenticated user can create
+
+      // read: student can read their own complaints, admin can read all
+      allow read: if request.auth != null && (
+        resource.data.studentId == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+
+      // update: student can update only their own complaint while status is Pending; admin can update all
+      allow update: if request.auth != null && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        (resource.data.studentId == request.auth.uid && resource.data.status == 'Pending')
+      );
+
+      // delete: only admin
+      allow delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
+  </pre>
+    </details>
+
+    <!-- HOSTING INSTRUCTIONS (short) -->
+    <details style="width:860px;max-width:95%;margin:8px auto">
+        <summary style="cursor:pointer;padding:10px;background:#fff;border-radius:6px">Firebase Hosting — Quick steps
+        </summary>
+        <ol style="padding:12px;margin:0">
+            <li>Install Firebase CLI: <code>npm i -g firebase-tools</code></li>
+            <li>Login: <code>firebase login</code></li>
+            <li>Init: <code>firebase init</code> choose Hosting, select project, set <code>public</code> to
+                <code>public</code> or <code>build</code> folder.
+            </li>
+            <li>Copy this file (index.html) into your public folder and run: <code>firebase deploy --only hosting</code>
+            </li>
+        </ol>
+    </details>
+
+</body>
+
+</html>

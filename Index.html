@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Complaint Management System - Dashboard</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- CSS Styles -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #ef233c;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--dark-color);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-avatar i {
+            font-size: 24px;
+        }
+
+        .user-info div {
+            margin-bottom: 5px;
+        }
+
+        .user-info div:last-child {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-menu li a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .nav-button {
+            padding: 15px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .nav-button.active {
+            background-color: var(--secondary-color);
+        }
+
+        .nav-button i {
+            font-size: 18px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 1px solid #eee;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--gray-color);
+            font-style: italic;
+            padding: 20px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-view {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0880e;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #d61c3a;
+        }
+
+        .btn-add {
+            background-color: var(--success-color);
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-add:hover {
+            background-color: #3db8e0;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn:disabled {
+            background-color: var(--gray-color);
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: var(--border-radius);
+            width: 80%;
+            max-width: 800px;
+            box-shadow: var(--box-shadow);
+            animation: modalopen 0.4s;
+        }
+
+        @keyframes modalopen {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .close {
+            color: var(--gray-color);
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-badge.in-review {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .status-badge.resolved {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+
+        /* Filter Container */
+        .filter-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            display: none;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .filter-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            min-width: 150px;
+        }
+
+        /* Loading & Notification Styles */
+        .loading-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            min-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background-color: rgba(76, 201, 240, 0.9);
+            color: white;
+        }
+
+        .notification.error {
+            background-color: rgba(239, 35, 60, 0.9);
+            color: white;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-content i {
+            margin-right: 10px;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* Complaint Detail Styles */
+        .complaint-detail {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+        }
+
+        .attachment-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .attachment-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Admin Response Form */
+        .admin-response-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Profile Image Upload */
+        .profile-image-upload {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-image-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-image-preview i {
+            font-size: 40px;
+            color: var(--gray-color);
+        }
+
+        /* Activity Log Styles */
+        .activity-item {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .activity-date {
+            color: var(--gray-color);
+            font-size: 14px;
+        }
+
+        .activity-content {
+            margin-bottom: 15px;
+        }
+
+        .activity-response {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .activity-response-header {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .sidebar-menu li {
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dashboard Page -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Complaint System</h2>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <div id="user-name">Loading...</div>
+                    <div id="user-email">Loading...</div>
+                    <div id="user-role">Student</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 id="page-title">Welcame to Student Complaint Management System </h1>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <button class="nav-button active" data-section="admin">
+                    <i class="fas fa-user-shield"></i> Admin
+                </button>
+                <button class="nav-button" data-section="student">
+                    <i class="fas fa-user-graduate"></i> Student
+                </button>
+                <button class="nav-button" data-section="complaints">
+                    <i class="fas fa-exclamation-circle"></i> View Complaint
+                </button>
+                <button class="nav-button" data-section="activities">
+                    <i class="fas fa-history"></i> Activities Log
+                </button>
+            </div>
+
+            <!-- Admin Section -->
+            <div id="admin-section" class="content-section active">
+                <button class="btn btn-add" id="add-admin-btn">
+                    <i class="fas fa-plus"></i> Add New Admin
+                </button>
+                <div class="table-container">
+                    <table id="admins-table">
+                        <thead>
+                            <tr>
+                                <th>ALLName</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="no-data">Loading admins...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Student Section -->
+            <div id="student-section" class="content-section">
+                <h2>Student Complaint Form</h2>
+                <form id="student-complaint-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-name">Name</label>
+                            <input type="text" id="student-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-email">Email</label>
+                            <input type="email" id="student-email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-telephone">Telephone</label>
+                            <input type="tel" id="student-telephone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-sex">Sex</label>
+                            <select id="student-sex" required>
+                                <option value="">Select sex</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-age">Age</label>
+                            <input type="number" id="student-age" min="16" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-school">School Attended</label>
+                            <select id="student-school" required>
+                                <option value="">Select school type</option>
+                                <option value="University">University</option>
+                                <option value="High School">High School</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-department">Department</label>
+                            <select id="student-department" required>
+                                <option value="">Select a department</option>
+                                <option value="IT">Information Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Law">Law</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Medicine">Medicine</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Science">Science</option>
+                                <option value="Education">Education</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaint-date">Date</label>
+                            <input type="date" id="complaint-date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-title">Complaint Title</label>
+                        <input type="text" id="complaint-title" placeholder="Brief title of your complaint" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-category">Category</label>
+                        <select id="complaint-category" required>
+                            <option value="">Select a category</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Discipline">Discipline</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Facilities">Facilities</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-description">Description</label>
+                        <textarea id="complaint-description" rows="6"
+                            placeholder="Provide detailed information about your complaint" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaint-attachment">Attachment (Optional)</label>
+                        <input type="file" id="complaint-attachment" accept="image/*,.pdf,.doc,.docx">
+                        <div id="attachment-preview" class="attachment-preview"></div>
+                    </div>
+                    <button type="submit" class="btn">Submit Complaint</button>
+                </form>
+            </div>
+
+            <!-- Complaints Section -->
+            <div id="complaints-section" class="content-section">
+                <div class="section-header">
+                    <h2>All Complaints</h2>
+                    <button id="filter-btn" class="btn btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+                </div>
+                <div class="filter-container" id="filter-container">
+                    <div class="filter-group">
+                        <label for="status-filter">Status:</label>
+                        <select id="status-filter">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Review">In Review</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="category-filter">Category:</label>
+                        <select id="category-filter">
+                            <option value="">All Categories</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Discipline">Discipline</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Facilities">Facilities</option>
+                            <option value="Staff">Staff</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button id="apply-filter" class="btn">Apply Filter</button>
+                </div>
+                <div class="table-container">
+                    <table id="complaints-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student Name</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Activities Log Section -->
+            <div id="activities-section" class="content-section">
+                <h2>Activities Log</h2>
+                <div id="activities-container">
+                    <div class="no-data">Loading activities...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="admin-modal-title">Admin Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="admin-form">
+                    <input type="hidden" id="admin-id">
+                    <div class="profile-image-upload">
+                        <div class="profile-image-preview" id="admin-profile-preview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label for="admin-profile-image">Profile Image</label>
+                                <input type="file" id="admin-profile-image" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-name">Full Name</label>
+                        <input type="text" id="admin-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-email">Email</label>
+                        <input type="email" id="admin-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-password">Password</label>
+                        <input type="password" id="admin-password">
+                        <small>Leave blank to keep current password</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-role">Role</label>
+                        <select id="admin-role" required>
+                            <option value="admin">Admin</option>
+                            <option value="superadmin">Super Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-permissions">Permissions</label>
+                        <div id="admin-permissions">
+                            <div>
+                                <input type="checkbox" id="perm-approve" value="approve">
+                                <label for="perm-approve">Approve Complaints</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="perm-respond" value="respond">
+                                <label for="perm-respond">Respond to Complaints</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="perm-update" value="update">
+                                <label for="perm-update">Update Status</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="perm-manage" value="manage">
+                                <label for="perm-manage">Manage Users</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Save Admin</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Modal -->
+    <div id="student-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="student-modal-title">Student Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="student-form">
+                    <input type="hidden" id="student-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-name">Name</label>
+                            <input type="text" id="student-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-email">Email</label>
+                            <input type="email" id="student-email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-telephone">Telephone</label>
+                            <input type="tel" id="student-telephone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-sex">Sex</label>
+                            <select id="student-sex" required>
+                                <option value="">Select sex</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-age">Age</label>
+                            <input type="number" id="student-age" min="16" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-school">School Attended</label>
+                            <select id="student-school" required>
+                                <option value="">Select school type</option>
+                                <option value="University">University</option>
+                                <option value="High School">High School</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="student-department">Department</label>
+                            <select id="student-department" required>
+                                <option value="">Select a department</option>
+                                <option value="IT">Information Technology</option>
+                                <option value="Business">Business</option>
+                                <option value="Law">Law</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Medicine">Medicine</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Science">Science</option>
+                                <option value="Education">Education</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="complaint-date">Date</label>
+                            <input type="date" id="complaint-date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-password">Password</label>
+                        <input type="password" id="student-password">
+                        <small>Leave blank to keep current password</small>
+                    </div>
+                    <button type="submit" class="btn">Save Student</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Detail Modal -->
+    <div id="complaint-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Complaint Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+
+    <script>
+        // --- CONFIGURATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDmU_FtaPo3xZqsKrfanqK52WtN6qX8QTs",
+            authDomain: "student-complients.firebaseapp.com",
+            projectId: "student-complients",
+            storageBucket: "student-complients.firebasestorage.app",
+            messagingSenderId: "443148742940",
+            appId: "1:443148742940:web:16f24e5cfcbd35dfc4cad9"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const functions = firebase.functions(); // callable functions client
+        db.enablePersistence().catch(err => console.error("Persistence failed:", err));
+
+        // --- DOM ELEMENTS ---
+        const studentComplaintForm = document.getElementById('student-complaint-form');
+        const adminForm = document.getElementById('admin-form');
+        const studentForm = document.getElementById('student-form');
+        let currentUserRole = '';
+        let adminProfileImage = null;
+
+        // --- AUTHENTICATION LISTENER ---
+        // Check if user is logged in
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is logged in, load their profile
+                loadUserProfile(user.uid);
+                loadAdmins();
+            } else {
+                // User is not logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+
+        // --- DASHBOARD LOGIC ---
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                // Redirect to login page after logout
+                window.location.href = 'login.html';
+            });
+        });
+
+        // Navigation buttons
+        document.querySelectorAll('.nav-button').forEach(button => {
+            button.addEventListener('click', function () {
+                // Update active button
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update active section
+                const sectionId = this.getAttribute('data-section') + '-section';
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+
+                // Update page title
+                document.getElementById('page-title').textContent = this.textContent.trim();
+
+                // Load section-specific data
+                if (this.dataset.section === 'admin') {
+                    loadAdmins();
+                } else if (this.dataset.section === 'student') {
+                    // No need to load anything for student form
+                } else if (this.dataset.section === 'complaints') {
+                    loadComplaints();
+                } else if (this.dataset.section === 'activities') {
+                    loadActivities();
+                }
+            });
+        });
+
+        // Filter functionality
+        document.getElementById('filter-btn').addEventListener('click', () => {
+            document.getElementById('filter-container').style.display = 'flex';
+        });
+        document.getElementById('apply-filter').addEventListener('click', () => {
+            loadComplaints();
+            loadActivities();
+        });
+
+        // Student complaint form submission
+        studentComplaintForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const studentName = document.getElementById('student-name').value;
+            const studentEmail = document.getElementById('student-email').value;
+            const studentTelephone = document.getElementById('student-telephone').value;
+            const studentSex = document.getElementById('student-sex').value;
+            const studentAge = document.getElementById('student-age').value;
+            const studentSchool = document.getElementById('student-school').value;
+            const studentDepartment = document.getElementById('student-department').value;
+            const complaintDate = document.getElementById('complaint-date').value;
+            const title = document.getElementById('complaint-title').value;
+            const category = document.getElementById('complaint-category').value;
+            const description = document.getElementById('complaint-description').value;
+            const attachment = document.getElementById('complaint-attachment').files[0];
+
+            showLoading();
+
+            // First, save student information
+            db.collection('students').add({
+                name: studentName,
+                email: studentEmail,
+                telephone: studentTelephone,
+                sex: studentSex,
+                age: studentAge,
+                school: studentSchool,
+                department: studentDepartment,
+                created_at: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(studentDocRef => {
+                // Then save complaint with student reference
+                return db.collection('complaints').add({
+                    student_id: studentDocRef.id,
+                    student_name: studentName,
+                    student_email: studentEmail,
+                    student_telephone: studentTelephone,
+                    student_sex: studentSex,
+                    student_age: studentAge,
+                    student_school: studentSchool,
+                    student_department: studentDepartment,
+                    complaint_date: complaintDate,
+                    title,
+                    category,
+                    description,
+                    status: "Pending",
+                    admin_response: "",
+                    submitted_at: firebase.firestore.FieldValue.serverTimestamp(),
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(complaintDocRef => {
+                    if (attachment) {
+                        const storageRef = storage.ref(`complaints/${complaintDocRef.id}/${attachment.name}`);
+                        return storageRef.put(attachment).then(s => s.ref.getDownloadURL()).then(url => {
+                            return db.collection('complaints').doc(complaintDocRef.id).update({ attachment_url: url });
+                        });
+                    }
+                });
+            }).then(() => {
+                studentComplaintForm.reset();
+                document.getElementById('attachment-preview').innerHTML = '';
+                showNotification("Complaint submitted successfully!");
+                // show complaints
+                document.querySelector('[data-section="complaints"]').click();
+                loadActivities(); // ensure Activities shows the new item
+            }).catch(error => {
+                showNotification("Error: " + error.message, "error");
+            }).finally(hideLoading);
+        });
+
+        // Admin form submission
+        adminForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const adminId = document.getElementById('admin-id').value;
+            const name = document.getElementById('admin-name').value;
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            const role = document.getElementById('admin-role').value;
+
+            // Get selected permissions
+            const permissions = [];
+            document.querySelectorAll('#admin-permissions input:checked').forEach(checkbox => {
+                permissions.push(checkbox.value);
+            });
+
+            showLoading();
+
+            const adminData = {
+                full_name: name,
+                email,
+                role,
+                permissions,
+                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (adminProfileImage) {
+                adminData.profile_image_url = adminProfileImage;
+            }
+
+            if (adminId) {
+                // Update existing admin
+                db.collection('admins').doc(adminId).update(adminData)
+                    .then(() => {
+                        if (password) {
+                            // Update password if provided
+                            return auth.signInWithEmailAndPassword(email, password)
+                                .then(() => auth.currentUser.updatePassword(password))
+                                .catch(() => {
+                                    // If sign in fails, try to get user by email
+                                    return auth.fetchSignInMethodsForEmail(email)
+                                        .then(() => {
+                                            // If user exists, we need to reset password
+                                            return auth.sendPasswordResetEmail(email);
+                                        })
+                                        .then(() => {
+                                            showNotification("Password reset email sent to admin", "success");
+                                            return Promise.resolve();
+                                        });
+                                });
+                        }
+                    })
+                    .then(() => {
+                        document.getElementById('admin-modal').style.display = 'none';
+                        showNotification("Admin updated successfully!");
+                        loadAdmins();
+                    })
+                    .catch(error => {
+                        showNotification("Error updating admin: " + error.message, "error");
+                    })
+                    .finally(hideLoading);
+            } else {
+                // Create new admin
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(cred => {
+                        return db.collection('admins').doc(cred.user.uid).set({
+                            admin_id: cred.user.uid,
+                            full_name: name,
+                            email,
+                            role,
+                            permissions,
+                            profile_image_url: adminProfileImage || '',
+                            created_at: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .then(() => {
+                        document.getElementById('admin-modal').style.display = 'none';
+                        showNotification("Admin created successfully!");
+                        loadAdmins();
+                    })
+                    .catch(error => {
+                        showNotification("Error creating admin: " + error.message, "error");
+                    })
+                    .finally(hideLoading);
+            }
+        });
+
+        // Student form submission
+        studentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const studentId = document.getElementById('student-id').value;
+            const name = document.getElementById('student-name').value;
+            const email = document.getElementById('student-email').value;
+            const telephone = document.getElementById('student-telephone').value;
+            const sex = document.getElementById('student-sex').value;
+            const age = document.getElementById('student-age').value;
+            const school = document.getElementById('student-school').value;
+            const department = document.getElementById('student-department').value;
+            const password = document.getElementById('student-password').value;
+
+            showLoading();
+
+            if (studentId) {
+                // Update existing student
+                const studentData = {
+                    name,
+                    email,
+                    telephone,
+                    sex,
+                    age,
+                    school,
+                    department,
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                db.collection('students').doc(studentId).update(studentData)
+                    .then(() => {
+                        if (password) {
+                            // Update password if provided
+                            return auth.signInWithEmailAndPassword(email, password)
+                                .then(() => auth.currentUser.updatePassword(password))
+                                .catch(() => {
+                                    // If sign in fails, try to get user by email
+                                    return auth.fetchSignInMethodsForEmail(email)
+                                        .then(() => {
+                                            // If user exists, we need to reset password
+                                            return auth.sendPasswordResetEmail(email);
+                                        })
+                                        .then(() => {
+                                            showNotification("Password reset email sent to student", "success");
+                                            return Promise.resolve();
+                                        });
+                                });
+                        }
+                    })
+                    .then(() => {
+                        document.getElementById('student-modal').style.display = 'none';
+                        showNotification("Student updated successfully!");
+                        loadStudents();
+                    })
+                    .catch(error => {
+                        showNotification("Error updating student: " + error.message, "error");
+                    })
+                    .finally(hideLoading);
+            } else {
+                // Create new student
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then(cred => {
+                        return db.collection('students').doc(cred.user.uid).set({
+                            student_id: cred.user.uid,
+                            name,
+                            email,
+                            telephone,
+                            sex,
+                            age,
+                            school,
+                            department,
+                            role: "student",
+                            created_at: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    })
+                    .then(() => {
+                        document.getElementById('student-modal').style.display = 'none';
+                        showNotification("Student created successfully!");
+                        loadStudents();
+                    })
+                    .catch(error => {
+                        showNotification("Error creating student: " + error.message, "error");
+                    })
+                    .finally(hideLoading);
+            }
+        });
+
+        // Add new admin button
+        document.getElementById('add-admin-btn').addEventListener('click', () => {
+            document.getElementById('admin-modal-title').textContent = 'Add New Admin';
+            document.getElementById('admin-form').reset();
+            document.getElementById('admin-id').value = '';
+            document.getElementById('admin-profile-preview').innerHTML = '<i class="fas fa-user"></i>';
+            adminProfileImage = null;
+            document.getElementById('admin-modal').style.display = 'block';
+        });
+
+        // Add new student button (not present in UI by default; keep handler safe)
+        const addStudentBtn = document.getElementById('add-student-btn');
+        if (addStudentBtn) {
+            addStudentBtn.addEventListener('click', () => {
+                document.getElementById('student-modal-title').textContent = 'Add New Student';
+                document.getElementById('student-form').reset();
+                document.getElementById('student-id').value = '';
+                document.getElementById('student-modal').style.display = 'block';
+            });
+        }
+
+        // Profile image upload for admin
+        document.getElementById('admin-profile-image').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('admin-profile-preview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    preview.innerHTML = `<img src="${event.target.result}" alt="Profile Image">`;
+                };
+                reader.readAsDataURL(file);
+
+                // Upload to Firebase Storage
+                const storageRef = storage.ref(`admin_profiles/${Date.now()}_${file.name}`);
+                storageRef.put(file).then(snapshot => {
+                    return snapshot.ref.getDownloadURL();
+                }).then(url => {
+                    adminProfileImage = url;
+                }).catch(error => {
+                    console.error("Error uploading profile image:", error);
+                    showNotification("Error uploading profile image", "error");
+                });
+            }
+        });
+
+        // Attachment preview
+        document.getElementById('complaint-attachment').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('attachment-preview');
+
+            if (file) {
+                preview.innerHTML = `
+                    <div class="attachment-item">
+                        <i class="fas fa-file"></i>
+                        <span>${file.name}</span>
+                        <button type="button" class="remove-attachment">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+                preview.querySelector('.remove-attachment').addEventListener('click', () => {
+                    this.value = '';
+                    preview.innerHTML = '';
+                });
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        // Modal controls
+        document.querySelectorAll('.close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', () => {
+                closeBtn.closest('.modal').style.display = 'none';
+            });
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+
+        // --- DATA LOADING FUNCTIONS ---
+        function loadUserProfile(userId) {
+            db.collection('students').doc(userId).get().then(doc => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    document.getElementById('user-name').textContent = data.name || data.full_name;
+                    document.getElementById('user-email').textContent = data.email;
+                    document.getElementById('user-role').textContent = data.role;
+                    currentUserRole = data.role || 'student';
+                } else {
+                    // Try to get from admins collection
+                    db.collection('admins').doc(userId).get().then(adminDoc => {
+                        if (adminDoc.exists) {
+                            const data = adminDoc.data();
+                            document.getElementById('user-name').textContent = data.full_name;
+                            document.getElementById('user-email').textContent = data.email;
+                            document.getElementById('user-role').textContent = data.role;
+                            currentUserRole = data.role || 'admin';
+
+                            // Load profile image if available
+                            if (data.profile_image_url) {
+                                document.getElementById('user-avatar').innerHTML = `<img src="${data.profile_image_url}" alt="Profile">`;
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function loadAdmins() {
+            showLoading();
+            db.collection('admins').get().then(querySnapshot => {
+                const tbody = document.querySelector('#admins-table tbody');
+                tbody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="no-data">No admins found</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const admin = doc.data();
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${admin.full_name}</td>
+                        <td>${admin.email}</td>
+                        <td>${admin.role}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" data-id="${doc.id}">View</button>
+                                <button class="btn-action btn-edit" data-id="${doc.id}">Edit</button>
+                                <button class="btn-action btn-delete" data-id="${doc.id}">Delete</button>
+                            </div>
+                        </td>
+                    `;
+
+                    // Add event listeners to action buttons
+                    row.querySelector('.btn-view').addEventListener('click', () => viewAdmin(doc.id));
+                    row.querySelector('.btn-edit').addEventListener('click', () => editAdmin(doc.id));
+                    row.querySelector('.btn-delete').addEventListener('click', () => deleteAdmin(doc.id));
+                });
+            }).catch(error => {
+                console.error("Error loading admins:", error);
+                showNotification("Error loading admins: " + error.message, "error");
+            }).finally(hideLoading);
+        }
+
+        function loadStudents() {
+            showLoading();
+            db.collection('students').get().then(querySnapshot => {
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="no-data">No students found</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const student = doc.data();
+                    const row = tbody.insertRow();
+                    row.innerHTML = `
+                        <td>${student.name || student.full_name}</td>
+                        <td>${student.email}</td>
+                        <td>${student.telephone}</td>
+                        <td>${student.sex}</td>
+                        <td>${student.age}</td>
+                        <td>${student.school}</td>
+                        <td>${student.department}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" data-id="${doc.id}">View</button>
+                                <button class="btn-action btn-edit" data-id="${doc.id}">Edit</button>
+                                <button class="btn-action btn-delete" data-id="${doc.id}">Delete</button>
+                            </div>
+                        </td>
+                    `;
+
+                    // Add event listeners to action buttons
+                    row.querySelector('.btn-view').addEventListener('click', () => viewStudent(doc.id));
+                    row.querySelector('.btn-edit').addEventListener('click', () => editStudent(doc.id));
+                    row.querySelector('.btn-delete').addEventListener('click', () => deleteStudent(doc.id));
+                });
+            }).catch(error => {
+                console.error("Error loading students:", error);
+                showNotification("Error loading students: " + error.message, "error");
+            }).finally(hideLoading);
+        }
+
+        function loadComplaints() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+
+            let query = db.collection('complaints');
+
+            if (statusFilter) query = query.where('status', '==', statusFilter);
+            if (categoryFilter) query = query.where('category', '==', categoryFilter);
+
+            showLoading();
+
+            // Show most recently submitted/updated complaints first
+            query.orderBy('updated_at', 'desc').get().then(querySnapshot => {
+                const tbody = document.querySelector('#complaints-table tbody');
+                tbody.innerHTML = '';
+
+                if (querySnapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="no-data">No complaints found</td></tr>';
+                    return;
+                }
+
+                querySnapshot.forEach(doc => {
+                    const complaint = doc.data();
+                    const row = tbody.insertRow();
+
+                    const submittedDate = complaint.submitted_at ?
+                        new Date(complaint.submitted_at.toDate()).toLocaleDateString() : 'N/A';
+
+                    const isAdmin = (currentUserRole === 'admin' || currentUserRole === 'superadmin');
+
+                    row.innerHTML = `
+                        <td>${doc.id.substring(0, 8)}...</td>
+                        <td>${complaint.student_name}</td>
+                        <td>${complaint.title}</td>
+                        <td>${complaint.category}</td>
+                        <td><span class="status-badge ${complaint.status ? complaint.status.toLowerCase().replace(' ', '-') : 'pending'}">${complaint.status || 'Pending'}</span></td>
+                        <td>${submittedDate}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" data-id="${doc.id}">View</button>
+                                ${isAdmin ? `<button class="btn-action btn-edit" data-id="${doc.id}">Respond</button>` : ''}
+                            </div>
+                        </td>
+                    `;
+
+                    // Add event listeners to action buttons
+                    row.querySelector('.btn-view').addEventListener('click', () => viewComplaint(doc.id));
+                    if (isAdmin) {
+                        row.querySelector('.btn-edit').addEventListener('click', () => respondToComplaint(doc.id));
+                    }
+                });
+            }).catch(error => {
+                console.error("Error loading complaints:", error);
+                showNotification("Error loading complaints: " + error.message, "error");
+            }).finally(hideLoading);
+        }
+
+        function loadActivities() {
+            showLoading();
+
+            // Show all complaints ordered by updated_at desc (recent activity first).
+            // This will surface newly submitted complaints (they have updated_at set on creation)
+            db.collection('complaints')
+                .orderBy('updated_at', 'desc')
+                .limit(200) // limit to avoid too heavy reads; adjust as needed
+                .get()
+                .then(querySnapshot => {
+                    const container = document.getElementById('activities-container');
+                    container.innerHTML = '';
+
+                    if (querySnapshot.empty) {
+                        container.innerHTML = '<div class="no-data">No activities found</div>';
+                        return;
+                    }
+
+                    querySnapshot.forEach(doc => {
+                        const complaint = doc.data();
+                        const submittedDate = complaint.submitted_at ?
+                            new Date(complaint.submitted_at.toDate()).toLocaleDateString() : 'N/A';
+                        const updatedDate = complaint.updated_at ?
+                            new Date(complaint.updated_at.toDate()).toLocaleDateString() : submittedDate;
+
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <div class="activity-header">
+                                <div class="activity-title">${complaint.title}</div>
+                                <div class="activity-date">${updatedDate}</div>
+                            </div>
+                            <div class="activity-content">
+                                <p><strong>Student:</strong> ${complaint.student_name}</p>
+                                <p><strong>Category:</strong> ${complaint.category}</p>
+                                <p><strong>Submitted:</strong> ${submittedDate}</p>
+                                <p><strong>Status:</strong> <span class="status-badge ${complaint.status ? complaint.status.toLowerCase().replace(' ', '-') : 'pending'}">${complaint.status || 'Pending'}</span></p>
+                                <p><strong>Description:</strong> ${complaint.description}</p>
+                            </div>
+                            ${complaint.admin_response ? `
+                                <div class="activity-response">
+                                    <div class="activity-response-header">Admin Response:</div>
+                                    <p>${complaint.admin_response}</p>
+                                </div>
+                            ` : ''}
+                        `;
+
+                        // If current user is admin, allow quick "View & Respond" button inside activity item
+                        if (currentUserRole === 'admin' || currentUserRole === 'superadmin') {
+                            const respondBtn = document.createElement('button');
+                            respondBtn.className = 'btn btn-add';
+                            respondBtn.style.marginTop = '10px';
+                            respondBtn.textContent = 'View & Respond';
+                            respondBtn.addEventListener('click', () => viewComplaint(doc.id));
+                            activityItem.appendChild(respondBtn);
+                        }
+
+                        container.appendChild(activityItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading activities:", error);
+                    showNotification("Error loading activities: " + error.message, "error");
+                })
+                .finally(hideLoading);
+        }
+
+        // --- CRUD FUNCTIONS FOR ADMINS ---
+        function viewAdmin(adminId) {
+            db.collection('admins').doc(adminId).get().then(doc => {
+                if (!doc.exists) {
+                    showNotification("Admin not found", "error");
+                    return;
+                }
+
+                const admin = doc.data();
+                document.getElementById('admin-modal-title').textContent = 'Admin Details';
+                document.getElementById('admin-id').value = adminId;
+                document.getElementById('admin-name').value = admin.full_name;
+                document.getElementById('admin-email').value = admin.email;
+                document.getElementById('admin-role').value = admin.role;
+
+                // Set profile image if available
+                if (admin.profile_image_url) {
+                    document.getElementById('admin-profile-preview').innerHTML = `<img src="${admin.profile_image_url}" alt="Profile">`;
+                    adminProfileImage = admin.profile_image_url;
+                } else {
+                    document.getElementById('admin-profile-preview').innerHTML = '<i class="fas fa-user"></i>';
+                    adminProfileImage = null;
+                }
+
+                // Set permissions checkboxes
+                document.querySelectorAll('#admin-permissions input').forEach(checkbox => {
+                    checkbox.checked = admin.permissions && admin.permissions.includes(checkbox.value);
+                });
+
+                // Disable form fields for view mode
+                document.querySelectorAll('#admin-form input, #admin-form select').forEach(field => {
+                    field.disabled = true;
+                });
+
+                // Hide submit button and add close button
+                document.querySelector('#admin-form button[type="submit"]').style.display = 'none';
+
+                document.getElementById('admin-modal').style.display = 'block';
+            }).catch(error => {
+                showNotification("Error loading admin: " + error.message, "error");
+            });
+        }
+
+        function editAdmin(adminId) {
+            db.collection('admins').doc(adminId).get().then(doc => {
+                if (!doc.exists) {
+                    showNotification("Admin not found", "error");
+                    return;
+                }
+
+                const admin = doc.data();
+                document.getElementById('admin-modal-title').textContent = 'Edit Admin';
+                document.getElementById('admin-id').value = adminId;
+                document.getElementById('admin-name').value = admin.full_name;
+                document.getElementById('admin-email').value = admin.email;
+                document.getElementById('admin-role').value = admin.role;
+
+                // Set profile image if available
+                if (admin.profile_image_url) {
+                    document.getElementById('admin-profile-preview').innerHTML = `<img src="${admin.profile_image_url}" alt="Profile">`;
+                    adminProfileImage = admin.profile_image_url;
+                } else {
+                    document.getElementById('admin-profile-preview').innerHTML = '<i class="fas fa-user"></i>';
+                    adminProfileImage = null;
+                }
+
+                // Set permissions checkboxes
+                document.querySelectorAll('#admin-permissions input').forEach(checkbox => {
+                    checkbox.checked = admin.permissions && admin.permissions.includes(checkbox.value);
+                });
+
+                // Enable form fields for edit mode
+                document.querySelectorAll('#admin-form input, #admin-form select').forEach(field => {
+                    field.disabled = false;
+                });
+
+                // Show submit button
+                document.querySelector('#admin-form button[type="submit"]').style.display = 'block';
+
+                document.getElementById('admin-modal').style.display = 'block';
+            }).catch(error => {
+                showNotification("Error loading admin: " + error.message, "error");
+            });
+        }
+
+        function deleteAdmin(adminId) {
+            if (confirm("Are you sure you want to delete this admin? This action cannot be undone.")) {
+                showLoading();
+
+                // Get admin email to delete auth user
+                db.collection('admins').doc(adminId).get().then(doc => {
+                    if (doc.exists) {
+                        const adminEmail = doc.data().email;
+
+                        // Delete admin from Firestore
+                        return db.collection('admins').doc(adminId).delete();
+                    }
+                    throw new Error("Admin not found");
+                }).then(() => {
+                    // Find and delete the auth user
+                    // Note: This requires admin SDK, which is not available in client-side Firebase
+                    // In a real application, you would use a Cloud Function for this
+                    showNotification("Admin deleted successfully. Note: Authentication user may need to be deleted manually.");
+                    loadAdmins();
+                }).catch(error => {
+                    showNotification("Error deleting admin: " + error.message, "error");
+                }).finally(hideLoading);
+            }
+        }
+
+        // --- CRUD FUNCTIONS FOR STUDENTS ---
+        function viewStudent(studentId) {
+            db.collection('students').doc(studentId).get().then(doc => {
+                if (!doc.exists) {
+                    showNotification("Student not found", "error");
+                    return;
+                }
+
+                const student = doc.data();
+                document.getElementById('student-modal-title').textContent = 'Student Details';
+                document.getElementById('student-id').value = studentId;
+                document.getElementById('student-name').value = student.name || student.full_name;
+                document.getElementById('student-email').value = student.email;
+                document.getElementById('student-telephone').value = student.telephone;
+                document.getElementById('student-sex').value = student.sex;
+                document.getElementById('student-age').value = student.age;
+                document.getElementById('student-school').value = student.school;
+                document.getElementById('student-department').value = student.department;
+
+                // Disable form fields for view mode
+                document.querySelectorAll('#student-form input, #student-form select, #student-form textarea').forEach(field => {
+                    field.disabled = true;
+                });
+
+                // Hide submit button and add close button
+                document.querySelector('#student-form button[type="submit"]').style.display = 'none';
+
+                document.getElementById('student-modal').style.display = 'block';
+            }).catch(error => {
+                showNotification("Error loading student: " + error.message, "error");
+            });
+        }
+
+        function editStudent(studentId) {
+            db.collection('students').doc(studentId).get().then(doc => {
+                if (!doc.exists) {
+                    showNotification("Student not found", "error");
+                    return;
+                }
+
+                const student = doc.data();
+                document.getElementById('student-modal-title').textContent = 'Edit Student';
+                document.getElementById('student-id').value = studentId;
+                document.getElementById('student-name').value = student.name || student.full_name;
+                document.getElementById('student-email').value = student.email;
+                document.getElementById('student-telephone').value = student.telephone;
+                document.getElementById('student-sex').value = student.sex;
+                document.getElementById('student-age').value = student.age;
+                document.getElementById('student-school').value = student.school;
+                document.getElementById('student-department').value = student.department;
+
+                // Enable form fields for edit mode
+                document.querySelectorAll('#student-form input, #student-form select, #student-form textarea').forEach(field => {
+                    field.disabled = false;
+                });
+
+                // Show submit button
+                document.querySelector('#student-form button[type="submit"]').style.display = 'block';
+
+                document.getElementById('student-modal').style.display = 'block';
+            }).catch(error => {
+                showNotification("Error loading student: " + error.message, "error");
+            });
+        }
+
+        function deleteStudent(studentId) {
+            if (confirm("Are you sure you want to delete this student? This action cannot be undone.")) {
+                showLoading();
+
+                // Get student email to delete auth user
+                db.collection('students').doc(studentId).get().then(doc => {
+                    if (doc.exists) {
+                        const studentEmail = doc.data().email;
+
+                        // Delete student from Firestore
+                        return db.collection('students').doc(studentId).delete();
+                    }
+                    throw new Error("Student not found");
+                }).then(() => {
+                    // Find and delete the auth user
+                    // Note: This requires admin SDK, which is not available in client-side Firebase
+                    // In a real application, you would use a Cloud Function for this
+                    showNotification("Student deleted successfully. Note: Authentication user may need to be deleted manually.");
+                    loadStudents();
+                }).catch(error => {
+                    showNotification("Error deleting student: " + error.message, "error");
+                }).finally(hideLoading);
+            }
+        }
+
+        function viewComplaint(complaintId) {
+            showLoading();
+
+            db.collection('complaints').doc(complaintId).get().then(doc => {
+                if (!doc.exists) {
+                    showNotification("Complaint not found", "error");
+                    return;
+                }
+
+                const complaint = doc.data();
+                const submittedDate = complaint.submitted_at ?
+                    new Date(complaint.submitted_at.toDate()).toLocaleString() : 'N/A';
+                const updatedDate = complaint.updated_at ?
+                    new Date(complaint.updated_at.toDate()).toLocaleString() : 'N/A';
+
+                let modalContent = `
+                    <div class="complaint-detail">
+                        <div class="detail-row">
+                            <div class="detail-label">Complaint ID:</div>
+                            <div class="detail-value">${complaintId}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student Name:</div>
+                            <div class="detail-value">${complaint.student_name}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student Email:</div>
+                            <div class="detail-value">${complaint.student_email}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student Telephone:</div>
+                            <div class="detail-value">${complaint.student_telephone || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student Sex:</div>
+                            <div class="detail-value">${complaint.student_sex || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Student Age:</div>
+                            <div class="detail-value">${complaint.student_age || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">School Attended:</div>
+                            <div class="detail-value">${complaint.student_school || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Department:</div>
+                            <div class="detail-value">${complaint.student_department || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Complaint Date:</div>
+                            <div class="detail-value">${complaint.complaint_date || 'N/A'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Title:</div>
+                            <div class="detail-value">${complaint.title}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Category:</div>
+                            <div class="detail-value">${complaint.category}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status:</div>
+                            <div class="detail-value">
+                                <span class="status-badge ${complaint.status ? complaint.status.toLowerCase().replace(' ', '-') : 'pending'}">${complaint.status || 'Pending'}</span>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Description:</div>
+                            <div class="detail-value">${complaint.description}</div>
+                        </div>
+                        ${complaint.attachment_url ? `
+                            <div class="detail-row">
+                                <div class="detail-label">Attachment:</div>
+                                <div class="detail-value">
+                                    <a href="${complaint.attachment_url}" target="_blank" class="attachment-link">
+                                        <i class="fas fa-file"></i> View Attachment
+                                    </a>
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${complaint.admin_response ? `
+                            <div class="detail-row">
+                                <div class="detail-label">Admin Response:</div>
+                                <div class="detail-value">${complaint.admin_response}</div>
+                            </div>
+                        ` : ''}
+                        <div class="detail-row">
+                            <div class="detail-label">Submitted At:</div>
+                            <div class="detail-value">${submittedDate}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Last Updated:</div>
+                            <div class="detail-value">${updatedDate}</div>
+                        </div>
+                    </div>
+                `;
+
+                // Add admin response form if current user is admin
+                if (currentUserRole === 'admin' || currentUserRole === 'superadmin') {
+                    modalContent += `
+                        <div class="admin-response-form">
+                            <h3>Admin Response</h3>
+                            <form id="admin-response-form">
+                                <input type="hidden" id="response-complaint-id" value="${complaintId}">
+                                <div class="form-group">
+                                    <label for="response-status">Update Status:</label>
+                                    <select id="response-status">
+                                        <option value="Pending" ${complaint.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="In Review" ${complaint.status === 'In Review' ? 'selected' : ''}>In Review</option>
+                                        <option value="Resolved" ${complaint.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="response-text">Response:</label>
+                                    <textarea id="response-text" rows="4" placeholder="Enter your response">${complaint.admin_response || ''}</textarea>
+                                </div>
+                                <button type="submit" class="btn">Submit Response</button>
+                            </form>
+                        </div>
+                    `;
+
+                    // Add event listener for admin response form
+                    // Use setTimeout to ensure content inserted in DOM before adding listener
+                    setTimeout(() => {
+                        const responseForm = document.getElementById('admin-response-form');
+                        if (!responseForm) return;
+
+                        responseForm.addEventListener('submit', (e) => {
+                            e.preventDefault();
+                            const status = document.getElementById('response-status').value;
+                            const response = document.getElementById('response-text').value;
+                            const studentEmail = complaint.student_email || '';
+                            const subject = `Response to your complaint: ${complaint.title}`;
+
+                            showLoading();
+
+                            db.collection('complaints').doc(complaintId).update({
+                                status: status,
+                                admin_response: response,
+                                updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                            }).then(() => {
+                                // Call Cloud Function to send email to the student
+                                // Requires that you deploy the sendResponseEmail callable function (see README)
+                                if (studentEmail) {
+                                    const sendEmail = functions.httpsCallable('sendResponseEmail');
+                                    return sendEmail({
+                                        to: studentEmail,
+                                        subject,
+                                        message: `Dear ${complaint.student_name || 'student'},\n\nYour complaint titled "${complaint.title}" has a new response from the administration.\n\nStatus: ${status}\n\nResponse:\n${response}\n\nRegards,\nAdministration`
+                                    }).then(result => {
+                                        // result.data may contain function return info
+                                        showNotification("Response submitted and email sent to student!");
+                                        logActivity(auth.currentUser ? auth.currentUser.uid : null, `Responded to complaint ${complaintId}`, complaintId);
+                                    }).catch(err => {
+                                        // Email failed but response saved
+                                        console.error("Error sending email:", err);
+                                        showNotification("Response saved but failed to send email: " + err.message, "error");
+                                        logActivity(auth.currentUser ? auth.currentUser.uid : null, `Responded to complaint ${complaintId} (email failed)`, complaintId);
+                                    });
+                                } else {
+                                    showNotification("Response submitted (no student email available).");
+                                    logActivity(auth.currentUser ? auth.currentUser.uid : null, `Responded to complaint ${complaintId}`, complaintId);
+                                    return Promise.resolve();
+                                }
+                            }).then(() => {
+                                document.getElementById('complaint-modal').style.display = 'none';
+                                loadComplaints();
+                                loadActivities();
+                            }).catch(error => {
+                                showNotification("Error submitting response: " + error.message, "error");
+                            }).finally(hideLoading);
+                        });
+                    }, 100);
+                }
+
+                document.querySelector('#complaint-modal .modal-body').innerHTML = modalContent;
+                document.getElementById('complaint-modal').style.display = 'block';
+            }).catch(error => {
+                showNotification("Error loading complaint: " + error.message, "error");
+            }).finally(hideLoading);
+        }
+
+        function respondToComplaint(complaintId) {
+            viewComplaint(complaintId);
+        }
+
+        // --- HELPER FUNCTIONS ---
+        function logActivity(userId, action, complaintId = null) {
+            db.collection('activity_logs').add({
+                user_id: userId,
+                action,
+                complaint_id: complaintId,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(error => {
+                console.error("Error logging activity:", error);
+            });
+        }
+
+        function showLoading() {
+            document.getElementById('loading-indicator').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+
+            // Close button functionality
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            });
+
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.classList.remove('show');
+                    setTimeout(() => {
+                        if (document.body.contains(notification)) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>
