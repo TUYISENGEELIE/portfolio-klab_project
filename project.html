@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Projects Blog Section</title>
+
+    <!-- =======================
+         INTERNAL CSS
+    =========================== -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f2f2f2;
+        }
+
+        .projects-section {
+            padding: 60px 20px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 34px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 40px;
+        }
+
+        .projects-container {
+            max-width: 1100px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .project-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .project-content {
+            padding: 18px;
+            text-align: left;
+        }
+
+        .project-content h3 {
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .project-content p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .read-more {
+            display: inline-block;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- =======================
+         PROJECT BLOG SECTION
+    =========================== -->
+    <section class="projects-section" id="projects">
+        <h2 class="section-title">My Recent Projects</h2>
+        <p class="section-subtitle">Explore my latest work and case studies</p>
+
+        <div class="projects-container" id="projectList">
+            <!-- Projects will be loaded dynamically by JS -->
+        </div>
+    </section>
+
+    <!-- =======================
+         INTERNAL JAVASCRIPT
+    =========================== -->
+    <script>
+        const projects = [
+            {
+                title: "Personal Finance Tracker ",
+                desc: "A web app for managing personal finances with charts and analytics.",
+                image: "IMAGE_PROJECT/finance.png",
+                link: "https://dazzling-stroopwafel-55c5d6.netlify.app/"
+            },
+            {
+                title: "Students Complaint System",
+                desc: "A system that manages, receives, and resolves student complaints.",
+                image: "IMAGE_PROJECT/students.png",
+                link: "https://creative-kangaroo-fa0bf2.netlify.app/"
+            },
+            {
+                title: "Kawunga Product LTD Website",
+                desc: "A business website with services, contact page, and product listings.",
+                image: "IMAGE_PROJECT/kawunga.png",
+                link: "http://localhost:3000/"
+            },
+            {
+                title: "Time Racing Intelligence System",
+                desc: "Real-Time Racing Intelligence is a data-driven innovation designed to enhance the performance and safety of racing teams..",
+                image: "IMAGE_PROJECT/RACING.png",
+                link: "https://celebrated-creponne-72bf42.netlify.app/"
+            },
+
+        ];
+
+        const projectList = document.getElementById("projectList");
+
+        projects.forEach(p => {
+            projectList.innerHTML += `
+                <div class="project-card">
+                    <img src="${p.image}" alt="${p.title}">
+                    <div class="project-content">
+                        <h3>${p.title}</h3>
+                        <p>${p.desc}</p>
+                        <a href="${p.link}" class="read-more">View Project →</a>
+                    </div>
+                </div>
+            `;
+        });
+    </script>
+
+</body>
+
+</html>
